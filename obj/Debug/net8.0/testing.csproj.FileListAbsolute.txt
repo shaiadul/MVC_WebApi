@@ -135,3 +135,4 @@ E:\dotnet\practice\testing\obj\Debug\net8.0\refint\testing.dll
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.pdb
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.genruntimeconfig.cache
 E:\dotnet\practice\testing\obj\Debug\net8.0\ref\testing.dll
+E:\dotnet\practice\testing\obj\Debug\net8.0\testing.sourcelink.json

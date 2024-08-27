@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using testing.Data; 
+using testing.Data;
 using testing.Models;
 
 
@@ -56,6 +56,21 @@ namespace testing.Controllers
             }
             _context.Entry(stock).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            return NoContent();
+        }
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStockStatus(int id, StockStatus newStatus)
+        {
+            var stockToUpdate = await _context.Stocks.FindAsync(id);
+            if (stockToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            stockToUpdate.StockStatus = newStatus;
+            _context.Entry(stockToUpdate).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
         [HttpDelete("{id}")]
