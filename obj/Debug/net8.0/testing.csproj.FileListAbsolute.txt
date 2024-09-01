@@ -121,6 +121,7 @@ E:\dotnet\practice\testing\obj\Debug\net8.0\testing.AssemblyInfo.cs
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.csproj.CoreCompileInputs.cache
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.MvcApplicationPartsAssemblyInfo.cs
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.MvcApplicationPartsAssemblyInfo.cache
+E:\dotnet\practice\testing\obj\Debug\net8.0\testing.sourcelink.json
 E:\dotnet\practice\testing\obj\Debug\net8.0\staticwebassets.build.json
 E:\dotnet\practice\testing\obj\Debug\net8.0\staticwebassets.development.json
 E:\dotnet\practice\testing\obj\Debug\net8.0\staticwebassets\msbuild.testing.Microsoft.AspNetCore.StaticWebAssets.props
@@ -135,4 +136,3 @@ E:\dotnet\practice\testing\obj\Debug\net8.0\refint\testing.dll
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.pdb
 E:\dotnet\practice\testing\obj\Debug\net8.0\testing.genruntimeconfig.cache
 E:\dotnet\practice\testing\obj\Debug\net8.0\ref\testing.dll
-E:\dotnet\practice\testing\obj\Debug\net8.0\testing.sourcelink.json
