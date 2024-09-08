@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using testing.Models;
 using testing.Data;
-
+using System.Threading.Tasks;
 
 namespace testing.Controllers
 {
@@ -23,14 +20,14 @@ namespace testing.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMCQs()
         {
-            var mcqs = await _context.MCQs.ToListAsync();
+            var mcqs = await _context.MCQs.Include(m => m.MultipleSelection).ToListAsync();
             return Ok(mcqs);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMCQById(int id)
         {
-            var mcq = await _context.MCQs.FindAsync(id);
+            var mcq = await _context.MCQs.Include(m => m.MultipleSelection).FirstOrDefaultAsync(m => m.Id == id);
             if (mcq == null)
             {
                 return NotFound();
@@ -39,7 +36,7 @@ namespace testing.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMCQ(MCQ mcq)
+        public async Task<IActionResult> CreateMCQ([FromBody] MCQ mcq)
         {
             _context.MCQs.Add(mcq);
             await _context.SaveChangesAsync();
@@ -47,7 +44,7 @@ namespace testing.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMCQ(int id, MCQ mcq)
+        public async Task<IActionResult> UpdateMCQ(int id, [FromBody] MCQ mcq)
         {
             if (id != mcq.Id)
             {
@@ -71,6 +68,21 @@ namespace testing.Controllers
             _context.MCQs.Remove(mcq);
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        // Add MultipleQuestion to MCQ
+        [HttpPost("{mcqId}/add-multiple-question")]
+        public async Task<IActionResult> AddMultipleQuestion(int mcqId, [FromBody] MultipleQuestion multipleQuestion)
+        {
+            var mcq = await _context.MCQs.Include(m => m.MultipleSelection).FirstOrDefaultAsync(m => m.Id == mcqId);
+            if (mcq == null)
+            {
+                return NotFound("MCQ not found");
+            }
+
+            mcq.MultipleSelection.Add(multipleQuestion);
+            await _context.SaveChangesAsync();
+            return Ok(mcq);
         }
     }
 }

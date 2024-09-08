@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using testing.Models;
 using testing.Data;
-
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace testing.Controllers
 {
@@ -23,14 +21,17 @@ namespace testing.Controllers
         [HttpGet]
         public async Task<IActionResult> GetExamsPacks()
         {
-            var examsPacks = await _context.ExamsPacks.ToListAsync();
+            var examsPacks = await _context.ExamsPacks.Include(e => e.Exams).ThenInclude(m => m.MCQs).ToListAsync();
             return Ok(examsPacks);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetExamsPackById(int id)
         {
-            var examsPack = await _context.ExamsPacks.FindAsync(id);
+            var examsPack = await _context.ExamsPacks
+                .Include(e => e.Exams).ThenInclude(m => m.MCQs)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
             if (examsPack == null)
             {
                 return NotFound();
@@ -39,7 +40,7 @@ namespace testing.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateExamsPack(ExamsPack examsPack)
+        public async Task<IActionResult> CreateExamsPack([FromBody] ExamsPack examsPack)
         {
             _context.ExamsPacks.Add(examsPack);
             await _context.SaveChangesAsync();
@@ -47,7 +48,7 @@ namespace testing.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateExamsPack(int id, ExamsPack examsPack)
+        public async Task<IActionResult> UpdateExamsPack(int id, [FromBody] ExamsPack examsPack)
         {
             if (id != examsPack.Id)
             {
@@ -71,6 +72,22 @@ namespace testing.Controllers
             _context.ExamsPacks.Remove(examsPack);
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        // Add an Exam to ExamsPack
+        [HttpPost("{examsPackId}/add-exam")]
+        public async Task<IActionResult> AddExam(int examsPackId, [FromBody] Exams exam)
+        {
+            var examsPack = await _context.ExamsPacks.Include(e => e.Exams).FirstOrDefaultAsync(e => e.Id == examsPackId);
+
+            if (examsPack == null)
+            {
+                return NotFound("ExamsPack not found");
+            }
+
+            examsPack.Exams.Add(exam);
+            await _context.SaveChangesAsync();
+            return Ok(examsPack);
         }
     }
 }

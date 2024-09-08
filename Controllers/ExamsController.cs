@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using testing.Models;
 using testing.Data;
-
+using System.Threading.Tasks;
 
 namespace testing.Controllers
 {
@@ -23,14 +20,14 @@ namespace testing.Controllers
         [HttpGet]
         public async Task<IActionResult> GetExams()
         {
-            var exams = await _context.Exams.ToListAsync();
+            var exams = await _context.Exams.Include(e => e.MCQs).ToListAsync();
             return Ok(exams);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetExamsById(int id)
         {
-            var exams = await _context.Exams.FindAsync(id);
+            var exams = await _context.Exams.Include(e => e.MCQs).FirstOrDefaultAsync(e => e.Id == id);
             if (exams == null)
             {
                 return NotFound();
@@ -39,7 +36,7 @@ namespace testing.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateExams(Exams exams)
+        public async Task<IActionResult> CreateExams([FromBody] Exams exams)
         {
             _context.Exams.Add(exams);
             await _context.SaveChangesAsync();
@@ -47,7 +44,7 @@ namespace testing.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateExams(int id, Exams exams)
+        public async Task<IActionResult> UpdateExams(int id, [FromBody] Exams exams)
         {
             if (id != exams.Id)
             {
@@ -71,6 +68,21 @@ namespace testing.Controllers
             _context.Exams.Remove(exams);
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        // Add MCQ to Exams
+        [HttpPost("{examId}/add-mcq")]
+        public async Task<IActionResult> AddMCQ(int examId, [FromBody] MCQ mcq)
+        {
+            var exam = await _context.Exams.Include(e => e.MCQs).FirstOrDefaultAsync(e => e.Id == examId);
+            if (exam == null)
+            {
+                return NotFound("Exam not found");
+            }
+
+            exam.MCQs.Add(mcq);
+            await _context.SaveChangesAsync();
+            return Ok(exam);
         }
     }
 }
